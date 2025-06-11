@@ -1,0 +1,80 @@
+{
+  "name": "@./petstore-api",
+  "version": "1.0.0",
+  "main": "./src/main.js",
+  "typings": "./src/index.d.ts",
+  "private": true,
+  "scripts": {},
+  "dependencies": {},
+  "nx": {
+    "name": "@./petstore-api",
+    "projectType": "application",
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "dist/apps/petstore-api",
+          "format": [
+            "cjs"
+          ],
+          "bundle": false,
+          "main": "apps/petstore-api/src/main.ts",
+          "tsConfig": "apps/petstore-api/tsconfig.app.json",
+          "assets": [
+            "apps/petstore-api/src/assets"
+          ],
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@./petstore-api:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@./petstore-api:build:development"
+          },
+          "production": {
+            "buildTarget": "@./petstore-api:build:production"
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    },
+    "tags": [
+      "mcp-server",
+      "type:app"
+    ]
+  }
+}
