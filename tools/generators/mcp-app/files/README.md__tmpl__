@@ -1,0 +1,128 @@
+# <%= name %>
+
+<%= description %>
+
+## Overview
+
+This is an MCP (Model Context Protocol) server application that provides tools, resources, and prompts for LLMs.
+
+## Features
+
+- **Tools**: Example tool implementation
+- **Resources**: Example resource provider  
+- **Prompts**: Example prompt templates
+- **Transport**: <%= transport === 'stdio' ? 'Standard I/O (stdio)' : 'Server-Sent Events (HTTP)' %>
+
+## Development
+
+### Build the server:
+```bash
+nx build <%= name %>
+```
+
+### Run in development mode:
+```bash
+nx serve <%= name %>
+```
+
+### Run tests:
+```bash
+nx test <%= name %>
+```
+
+### Lint the code:
+```bash
+nx lint <%= name %>
+```
+
+## Production Usage
+
+### Build for production:
+```bash
+nx build <%= name %> --configuration=production
+```
+
+### Run the built server:
+```bash
+node dist/apps/<%= name %>/src/main.js
+```
+
+<% if (transport === 'http') { %>### Environment Variables
+
+- `PORT`: The port to run the HTTP server on (default: 3000)
+
+Example:
+```bash
+PORT=8080 node dist/apps/<%= name %>/main.js
+```
+<% } %>
+
+## Integration
+
+<% if (transport === 'stdio') { %>### Claude Desktop Configuration
+
+Add to your Claude Desktop configuration:
+
+```json
+{
+  "mcpServers": {
+    "<%= name %>": {
+      "command": "node",
+      "args": ["/absolute/path/to/dist/apps/<%= name %>/src/main.js"]
+    }
+  }
+}
+```
+<% } else { %>### HTTP Integration
+
+Connect to the server at:
+```
+http://localhost:3000/<%= name %>
+```
+
+The server uses Server-Sent Events (SSE) for real-time communication.
+<% } %>
+
+## API Reference
+
+### Tools
+
+#### example-tool
+Processes a message and returns the result.
+
+**Input:**
+```json
+{
+  "message": "Hello, World!"
+}
+```
+
+**Output:**
+```
+[<%= name %>] Processed: Hello, World!
+```
+
+### Resources
+
+#### <%= name %>://example
+Returns example content from the server.
+
+### Prompts
+
+#### example-prompt
+Generates a prompt based on a given topic.
+
+**Arguments:**
+- `topic`: The topic to generate a prompt for
+
+## Extending the Server
+
+To add new functionality:
+
+1. **Add Tools**: Extend the `ListToolsRequestSchema` and `CallToolRequestSchema` handlers
+2. **Add Resources**: Extend the `ListResourcesRequestSchema` and `ReadResourceRequestSchema` handlers
+3. **Add Prompts**: Extend the `ListPromptsRequestSchema` and `GetPromptRequestSchema` handlers
+
+## License
+
+Private 

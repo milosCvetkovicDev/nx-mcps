@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "MCPApp",
+  "title": "Create an MCP Server Application",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the MCP server application",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the MCP server?",
+      "pattern": "^[a-zA-Z].*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what the MCP server does",
+      "default": "An MCP server application"
+    },
+    "transport": {
+      "type": "string",
+      "description": "Transport type for the MCP server",
+      "default": "stdio",
+      "enum": ["stdio", "http"],
+      "x-prompt": {
+        "message": "Which transport would you like to use?",
+        "type": "list",
+        "items": [
+          { "value": "stdio", "label": "Standard I/O (stdio)" },
+          { "value": "http", "label": "Streamable HTTP" }
+        ]
+      }
+    }
+  },
+  "required": ["name"]
+} 

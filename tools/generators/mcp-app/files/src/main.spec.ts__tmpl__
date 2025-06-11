@@ -1,0 +1,89 @@
+import { describe, it, expect, vi } from 'vitest';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+
+describe('<%= name %> MCP Server', () => {
+  it('should create a server with proper configuration', () => {
+    const server = new Server(
+      {
+        name: '<%= name %>',
+        version: '0.1.0',
+      },
+      {
+        capabilities: {
+          resources: {},
+          tools: {},
+          prompts: {},
+        },
+      }
+    );
+    
+    expect(server).toBeDefined();
+  });
+
+  describe('Tools', () => {
+    it('should handle example-tool', async () => {
+      const mockHandler = vi.fn().mockResolvedValue({
+        content: [
+          {
+            type: 'text',
+            text: '[<%= name %>] Processed: test message',
+          },
+        ],
+      });
+
+      const result = await mockHandler({ 
+        params: { 
+          name: 'example-tool', 
+          arguments: { message: 'test message' } 
+        } 
+      });
+      
+      expect(result.content[0].text).toContain('Processed: test message');
+    });
+  });
+
+  describe('Resources', () => {
+    it('should provide example resource', async () => {
+      const mockHandler = vi.fn().mockResolvedValue({
+        contents: [
+          {
+            uri: '<%= name %>://example',
+            mimeType: 'text/plain',
+            text: 'This is example content from <%= name %> MCP server',
+          },
+        ],
+      });
+
+      const result = await mockHandler({ 
+        params: { uri: '<%= name %>://example' } 
+      });
+      
+      expect(result.contents[0].text).toContain('<%= name %> MCP server');
+    });
+  });
+
+  describe('Prompts', () => {
+    it('should generate example prompt', async () => {
+      const mockHandler = vi.fn().mockResolvedValue({
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: 'Please provide information about: test topic',
+            },
+          },
+        ],
+      });
+
+      const result = await mockHandler({ 
+        params: { 
+          name: 'example-prompt', 
+          arguments: { topic: 'test topic' } 
+        } 
+      });
+      
+      expect(result.messages[0].content.text).toContain('test topic');
+    });
+  });
+}); 

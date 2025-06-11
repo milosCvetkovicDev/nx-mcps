@@ -1,0 +1,151 @@
+#!/usr/bin/env node
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+<% if (transport === 'stdio') { %>import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';<% } %>
+<% if (transport === 'http') { %>import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';<% } %>
+import {
+  CallToolRequestSchema,
+  ListResourcesRequestSchema,
+  ListToolsRequestSchema,
+  ReadResourceRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
+} from '@modelcontextprotocol/sdk/types.js';
+
+// <%= description %>
+const server = new Server(
+  {
+    name: '<%= name %>',
+    version: '0.1.0',
+  },
+  {
+    capabilities: {
+      resources: {},
+      tools: {},
+      prompts: {},
+    },
+  }
+);
+
+// Example tool implementation
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: 'example-tool',
+        description: 'An example tool for <%= name %>',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              description: 'A message to process',
+            },
+          },
+          required: ['message'],
+        },
+      },
+    ],
+  };
+});
+
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  if (request.params.name === 'example-tool') {
+    const { message } = request.params.arguments as { message: string };
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `[<%= name %>] Processed: ${message}`,
+        },
+      ],
+    };
+  }
+  
+  throw new Error(`Unknown tool: ${request.params.name}`);
+});
+
+// Example resource implementation
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  return {
+    resources: [
+      {
+        uri: '<%= name %>://example',
+        name: 'Example Resource',
+        description: 'An example resource for <%= name %>',
+        mimeType: 'text/plain',
+      },
+    ],
+  };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  if (request.params.uri === '<%= name %>://example') {
+    return {
+      contents: [
+        {
+          uri: '<%= name %>://example',
+          mimeType: 'text/plain',
+          text: 'This is example content from <%= name %> MCP server',
+        },
+      ],
+    };
+  }
+  
+  throw new Error(`Unknown resource: ${request.params.uri}`);
+});
+
+// Example prompt implementation
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  return {
+    prompts: [
+      {
+        name: 'example-prompt',
+        description: 'An example prompt for <%= name %>',
+        arguments: [
+          {
+            name: 'topic',
+            description: 'The topic to generate a prompt for',
+            required: true,
+          },
+        ],
+      },
+    ],
+  };
+});
+
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+  if (request.params.name === 'example-prompt') {
+    const { topic } = request.params.arguments as { topic: string };
+    
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: {
+            type: 'text',
+            text: `Please provide information about: ${topic}`,
+          },
+        },
+      ],
+    };
+  }
+  
+  throw new Error(`Unknown prompt: ${request.params.name}`);
+});
+
+// Start the server
+async function main() {
+  <% if (transport === 'stdio') { %>const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('<%= name %> MCP server running on stdio');<% } %>
+  <% if (transport === 'http') { %>const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+  const transport = new SSEServerTransport('/<%= name %>', port);
+  await server.connect(transport);
+  console.error(`<%= name %> MCP server running on http://localhost:${port}/<%= name %>`);<% } %>
+}
+
+main().catch((error) => {
+  console.error('Server error:', error);
+  process.exit(1);
+}); 
