@@ -1,10 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
     "types": ["node"],
-    "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+    "tsBuildInfoFile": "../../dist/apps/petstore-api/tsconfig.app.tsbuildinfo",
+    "esModuleInterop": true,
+    "downlevelIteration": true
   },
   "include": ["src/**/*.ts"],
   "exclude": [
