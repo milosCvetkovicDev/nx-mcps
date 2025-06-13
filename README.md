@@ -654,11 +654,43 @@ Every MCP server should include:
 
 Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
-- **[Setup Guide](./docs/setup-guide.md)** - Initial workspace setup and configuration
-- **[Development Guide](./docs/development-guide.md)** - Complete guide for building MCP servers
-- **[Scripts Reference](./docs/scripts-reference.md)** - Available npm scripts and commands
-- **[Server Examples](./docs/server-examples.md)** - Practical, production-ready examples
-- **[Advanced Topics](./docs/advanced-topics.md)** - Streaming, middleware, custom transports, and more
+### 🚀 Getting Started
+- **[Quick Start Tutorial](./docs/getting-started/quick-start-tutorial.md)** - Build your first MCP server in 10 minutes
+- **[Core Concepts](./docs/getting-started/core-concepts.md)** - Understanding MCP fundamentals
+- **[Setup Guide](./docs/getting-started/setup-guide.md)** - Initial workspace setup and configuration
+
+### 🔧 Development
+- **[Development Guide](./docs/development/development-guide.md)** - Complete guide for building MCP servers
+- **[API Reference](./docs/reference/api-reference.md)** - Complete MCP SDK API documentation
+- **[Quick Reference](./docs/reference/quick-reference.md)** - Common commands and patterns
+- **[Scripts Reference](./docs/reference/scripts-reference.md)** - Available npm scripts and commands
+
+### 📖 Examples & Tutorials
+- **[Server Examples](./docs/examples/server-examples.md)** - Practical, production-ready examples
+- **[Tutorials](./docs/tutorials/)** - Step-by-step guides for common tasks
+
+### 🚀 Deployment & Production
+- **[Deployment Guide](./docs/deployment/deployment-guide.md)** - Comprehensive deployment strategies
+- **[Claude Desktop Integration](./docs/deployment/claude-desktop-integration.md)** - Setting up servers with Claude
+- **[Docker Deployment](./docs/deployment/docker-deployment.md)** - Container deployment guide
+- **[Production Checklist](./docs/deployment/production-checklist.md)** - Pre-deployment requirements
+
+### 🏗️ Architecture & Advanced Topics
+- **[Architecture Overview](./docs/architecture/architecture-overview.md)** - System design and patterns
+- **[Architecture Decision Records](./docs/architecture/decisions/)** - Design decisions and rationale
+- **[Advanced Topics](./docs/advanced/advanced-topics.md)** - Streaming, middleware, custom transports
+
+### 🐛 Troubleshooting
+- **[Common Issues](./docs/troubleshooting/common-issues.md)** - Frequently encountered problems
+- **[Debugging Guide](./docs/troubleshooting/debugging-guide.md)** - Debugging techniques
+- **[Error Reference](./docs/troubleshooting/error-reference.md)** - Error codes and solutions
+
+### 🤝 Contributing
+- **[Contributing Guidelines](./docs/contributing/)** - How to contribute to the project
+
+### 📊 Project Information
+- **[Changelog](./CHANGELOG.md)** - Version history and upgrade guides
+- **[Documentation Summary](./docs/DOCUMENTATION_IMPROVEMENTS_SUMMARY.md)** - Overview of documentation structure
 
 📖 **[Browse All Documentation →](./docs/README.md)**
 

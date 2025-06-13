@@ -1,111 +1,101 @@
-# MCP Server Documentation
+# MCP Workspace Documentation
 
-Welcome to the comprehensive documentation for MCP (Model Context Protocol) server development in this Nx workspace.
+Welcome to the comprehensive documentation for the MCP (Model Context Protocol) Server Development Workspace. This documentation is organized to help you quickly find the information you need, whether you're just getting started or diving into advanced topics.
 
 ## 📚 Documentation Structure
 
-### Getting Started
-- **[Quick Reference](./quick-reference.md)** - Common commands and code snippets
-- **[Setup Guide](./setup-guide.md)** - Initial workspace setup and configuration
-- **[Development Guide](./development-guide.md)** - Complete guide for building MCP servers
-- **[Scripts Reference](./scripts-reference.md)** - Available npm scripts and commands
+### 🚀 Getting Started
+- **[Setup Guide](./getting-started/setup-guide.md)** - Initial workspace setup and configuration
+- **[Quick Start Tutorial](./getting-started/quick-start-tutorial.md)** - Build your first MCP server in 10 minutes
+- **[Core Concepts](./getting-started/core-concepts.md)** - Understanding MCP fundamentals
 
-### Development Resources
-- **[Server Examples](./server-examples.md)** - Practical, production-ready MCP server examples
-  - Database Query Server
-  - File System Operations Server
-  - API Gateway Server
-  - Code Analysis Server
-  - Task Management Server
-  - And more...
+### 🛠️ Development
+- **[Development Guide](./development/development-guide.md)** - Complete guide for building MCP servers
+- **[Project Structure](./development/project-structure.md)** - Understanding the workspace organization
+- **[Code Style Guide](./development/code-style-guide.md)** - Coding standards and best practices
+- **[Testing Guide](./development/testing-guide.md)** - Writing and running tests
 
-### Advanced Topics
-- **[Advanced Topics](./advanced-topics.md)** - Deep dive into advanced MCP development
-  - Streaming Responses
-  - Middleware and Interceptors
-  - Custom Transports
-  - Performance Optimization
-  - Authentication & Authorization
-  - Monitoring & Observability
-  - Plugin Architecture
+### 📖 Tutorials
+- **[Building a Weather Server](./tutorials/weather-server-tutorial.md)** - Step-by-step tutorial
+- **[Creating Custom Tools](./tutorials/custom-tools-tutorial.md)** - Advanced tool implementation
+- **[Resource Management](./tutorials/resource-management-tutorial.md)** - Working with MCP resources
+- **[Prompt Engineering](./tutorials/prompt-engineering-tutorial.md)** - Creating effective prompts
 
-## 🚀 Quick Navigation
+### 📋 Reference
+- **[Quick Reference](./reference/quick-reference.md)** - Common commands and patterns
+- **[Scripts Reference](./reference/scripts-reference.md)** - Available npm scripts and commands
+- **[API Reference](./reference/api-reference.md)** - Complete API documentation
+- **[Configuration Reference](./reference/configuration-reference.md)** - All configuration options
+
+### 💡 Examples
+- **[Server Examples](./examples/server-examples.md)** - Production-ready server implementations
+- **[Tool Examples](./examples/tool-examples.md)** - Common tool patterns and implementations
+- **[Integration Examples](./examples/integration-examples.md)** - Integrating with external services
+
+### 🚀 Deployment
+- **[Deployment Guide](./deployment/deployment-guide.md)** - Deploying MCP servers
+- **[Claude Desktop Integration](./deployment/claude-desktop-integration.md)** - Setting up with Claude
+- **[Docker Deployment](./deployment/docker-deployment.md)** - Containerizing MCP servers
+- **[Production Checklist](./deployment/production-checklist.md)** - Pre-deployment requirements
+
+### 🔧 Advanced Topics
+- **[Advanced Topics Overview](./advanced/advanced-topics.md)** - Deep dives into complex features
+- **[Custom Transports](./advanced/custom-transports.md)** - Implementing custom transport layers
+- **[Middleware Development](./advanced/middleware-development.md)** - Creating reusable middleware
+- **[Performance Optimization](./advanced/performance-optimization.md)** - Scaling and optimization
+- **[Security Best Practices](./advanced/security-best-practices.md)** - Securing MCP servers
+
+### 🏗️ Architecture
+- **[Architecture Overview](./architecture/architecture-overview.md)** - System design and patterns
+- **[Design Decisions](./architecture/decisions/README.md)** - Architecture Decision Records (ADRs)
+- **[Component Diagrams](./architecture/diagrams/README.md)** - Visual architecture guides
+
+### 🔍 Troubleshooting
+- **[Common Issues](./troubleshooting/common-issues.md)** - Frequently encountered problems
+- **[Debugging Guide](./troubleshooting/debugging-guide.md)** - Debugging MCP servers
+- **[Error Reference](./troubleshooting/error-reference.md)** - Error codes and solutions
+
+### 🤝 Contributing
+- **[Contributing Guide](./contributing/contributing-guide.md)** - How to contribute to the project
+- **[Development Setup](./contributing/development-setup.md)** - Setting up for development
+- **[Pull Request Guidelines](./contributing/pr-guidelines.md)** - PR best practices
+
+## 🎯 Quick Links
 
 ### For Beginners
-1. Start with the **[Setup Guide](./setup-guide.md)** to understand the workspace
-2. Follow the **[Development Guide](./development-guide.md)** to create your first server
-3. Refer to **[Scripts Reference](./scripts-reference.md)** for available commands
+1. Start with the [Setup Guide](./getting-started/setup-guide.md)
+2. Follow the [Quick Start Tutorial](./getting-started/quick-start-tutorial.md)
+3. Read about [Core Concepts](./getting-started/core-concepts.md)
+4. Try the [Weather Server Tutorial](./tutorials/weather-server-tutorial.md)
 
-### For Intermediate Developers
-1. Explore **[Server Examples](./server-examples.md)** for real-world implementations
-2. Learn about best practices in the **[Development Guide](./development-guide.md)**
-3. Understand the architecture and patterns used
+### For Developers
+1. Review the [Development Guide](./development/development-guide.md)
+2. Check the [API Reference](./reference/api-reference.md)
+3. Explore [Server Examples](./examples/server-examples.md)
+4. Learn about [Testing](./development/testing-guide.md)
 
-### For Advanced Users
-1. Dive into **[Advanced Topics](./advanced-topics.md)** for sophisticated patterns
-2. Implement custom transports and middleware
-3. Optimize performance and add monitoring
+### For DevOps
+1. Read the [Deployment Guide](./deployment/deployment-guide.md)
+2. Review the [Production Checklist](./deployment/production-checklist.md)
+3. Explore [Docker Deployment](./deployment/docker-deployment.md)
+4. Understand [Performance Optimization](./advanced/performance-optimization.md)
 
-## 🔍 What You'll Find
+## 📝 Documentation Standards
 
-### Setup Guide
-- Workspace configuration
-- MCP SDK integration
-- TypeScript setup
-- Generator templates
-- Project structure
+All documentation in this workspace follows these standards:
+- **Clear Structure**: Organized by topic and complexity
+- **Practical Examples**: Real-world code samples
+- **Progressive Disclosure**: From basics to advanced topics
+- **Searchable**: Consistent naming and cross-references
+- **Maintainable**: Regular updates and version tracking
 
-### Development Guide
-- Creating MCP servers (apps vs libraries)
-- Implementing tools, resources, and prompts
-- TypeScript configuration
-- Testing strategies
-- Best practices
+## 🔄 Keeping Documentation Updated
 
-### Scripts Reference
-- MCP-specific commands
-- Individual server scripts
-- Workspace commands
-- Development workflow
-- Debugging tips
-
-### Server Examples
-- **Database Operations**: Safe SQL queries, connection pooling
-- **File System**: Sandboxed file operations with security
-- **API Gateway**: Unified API access with rate limiting
-- **Code Analysis**: TypeScript/JavaScript analysis tools
-- **Task Management**: Background jobs and scheduling
-- **Real-time Updates**: WebSocket-based servers
-- **And more practical examples...**
-
-### Advanced Topics
-- **Architecture Patterns**: Middleware, plugins, custom transports
-- **Performance**: Caching, connection pooling, streaming
-- **Security**: Authentication, authorization, input validation
-- **Monitoring**: Metrics, tracing, health checks
-- **Testing**: Contract testing, load testing, integration tests
-- **State Management**: Event sourcing, distributed state
-
-## 📖 Additional Resources
-
-### External Links
-- [MCP Specification](https://github.com/modelcontextprotocol/specification)
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- [Nx Documentation](https://nx.dev)
-
-### Community
-- [MCP Discord](https://discord.gg/mcp)
-- [GitHub Discussions](https://github.com/modelcontextprotocol/specification/discussions)
-
-## 🤝 Contributing to Documentation
-
-When contributing to the documentation:
-1. Keep examples practical and tested
-2. Include code snippets that can be copy-pasted
-3. Explain the "why" not just the "how"
-4. Link to related sections
-5. Keep the tone friendly and accessible
+This documentation is actively maintained. For the latest updates:
+- Check the [CHANGELOG](../CHANGELOG.md) for recent changes
+- See [release notes](https://github.com/your-org/mcp-workspace/releases) for version-specific information
+- Join our [Discord community](https://discord.gg/mcp) for discussions
 
 ---
 
-[← Back to Main README](../README.md) 
+Need help? Can't find what you're looking for? [Open an issue](https://github.com/your-org/mcp-workspace/issues) or ask in our [Discord community](https://discord.gg/mcp). 

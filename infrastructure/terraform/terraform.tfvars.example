@@ -1,0 +1,18 @@
+# Cloudflare Authentication
+cloudflare_api_token  = "your-cloudflare-api-token"
+cloudflare_account_id = "your-cloudflare-account-id"
+
+# Environment (development, staging, production)
+environment = "development"
+
+# MCP Server configurations are dynamically generated
+# based on affected applications.
+#
+# You can add specific configurations for your MCP servers
+# in the environment-specific tfvars files:
+# - environments/dev.tfvars
+# - environments/staging.tfvars  
+# - environments/production.tfvars
+#
+# Or copy environments/mcp-server-config.example.tfvars
+# for examples of how to configure MCP servers. 

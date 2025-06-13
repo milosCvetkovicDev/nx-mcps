@@ -1,0 +1,206 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18'
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  detect-affected:
+    runs-on: ubuntu-latest
+    outputs:
+      affected-apps: ${{ steps.affected.outputs.apps }}
+      has-affected: ${{ steps.affected.outputs.has-affected }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect affected MCP servers
+        id: affected
+        run: |
+          # Determine base commit
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="HEAD~1"
+          fi
+          
+          # Get affected apps
+          AFFECTED=$(nx show projects --affected --base=$BASE --head=HEAD --type app | xargs -I {} nx show project {} --json | jq -r 'select(.tags[]? == "mcp-server") | .name' | tr '\n' ',' | sed 's/,$//')
+          
+          if [ -z "$AFFECTED" ]; then
+            echo "No affected MCP servers"
+            echo "apps=" >> $GITHUB_OUTPUT
+            echo "has-affected=false" >> $GITHUB_OUTPUT
+          else
+            echo "Affected MCP servers: $AFFECTED"
+            echo "apps=$AFFECTED" >> $GITHUB_OUTPUT
+            echo "has-affected=true" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-test:
+    needs: detect-affected
+    runs-on: ubuntu-latest
+    if: needs.detect-affected.outputs.has-affected == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting for affected
+        run: nx affected --target=lint --base=HEAD~1
+
+      - name: Run tests for affected
+        run: nx affected --target=test --base=HEAD~1
+
+      - name: Build affected applications
+        run: nx affected --target=build --base=HEAD~1
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 5
+
+  deploy:
+    needs: [detect-affected, build-and-test]
+    runs-on: ubuntu-latest
+    if: |
+      needs.detect-affected.outputs.has-affected == 'true' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+            echo "environment=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure Terraform credentials
+        run: |
+          cd infrastructure/terraform
+          cat > terraform.tfvars <<EOF
+          cloudflare_api_token  = "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          cloudflare_account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          EOF
+
+      - name: Generate affected apps configuration
+        working-directory: infrastructure/terraform
+        run: |
+          # Determine base commit for affected calculation
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="HEAD~1"
+          fi
+          
+          node scripts/generate-affected-config.js --base=$BASE --env=${{ steps.env.outputs.environment }}
+
+      - name: Terraform Init
+        working-directory: infrastructure/terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: infrastructure/terraform
+        run: terraform plan -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
+        working-directory: infrastructure/terraform
+        run: terraform apply -auto-approve -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
+
+      - name: Get deployment info
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
+        working-directory: infrastructure/terraform
+        run: |
+          echo "🚀 Deployed MCP Servers:"
+          terraform output -json deployed_mcp_servers | jq -r '.[] | "- \(.name) (\(.root))"'
+          echo ""
+          echo "📍 Deployment URLs:"
+          terraform output -json | jq -r 'to_entries[] | select(.key | endswith("_worker_url")) | "- \(.key | gsub("_worker_url$"; "")): \(.value)"'
+
+  cleanup:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Clean up artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: dist 

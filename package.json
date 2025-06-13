@@ -30,7 +30,20 @@
     "affected:graph": "nx affected:graph",
     "affected:build": "nx affected --target=build",
     "affected:test": "nx affected --target=test",
-    "affected:lint": "nx affected --target=lint"
+    "affected:lint": "nx affected --target=lint",
+    "// Terraform Scripts": "",
+    "tf:init": "cd infrastructure/terraform && terraform init",
+    "tf:plan": "cd infrastructure/terraform && terraform plan",
+    "tf:apply": "cd infrastructure/terraform && terraform apply",
+    "tf:destroy": "cd infrastructure/terraform && terraform destroy",
+    "tf:fmt": "cd infrastructure/terraform && terraform fmt -recursive",
+    "tf:validate": "cd infrastructure/terraform && terraform validate",
+    "tf:output": "cd infrastructure/terraform && terraform output -json",
+    "// Affected Deployment Scripts": "",
+    "deploy:affected": "nx affected --target=build && cd infrastructure/terraform && node scripts/generate-affected-config.js && terraform apply -auto-approve",
+    "deploy:affected:dev": "nx affected --target=build && cd infrastructure/terraform && make apply-auto ENV=dev",
+    "deploy:affected:staging": "nx affected --target=build && cd infrastructure/terraform && make apply-auto ENV=staging",
+    "deploy:affected:production": "nx affected --target=build && cd infrastructure/terraform && make apply-auto ENV=production"
   },
   "private": true,
   "dependencies": {
