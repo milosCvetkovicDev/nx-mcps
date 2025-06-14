@@ -56,8 +56,14 @@ jobs:
             BASE="HEAD~1"
           fi
           
+          # Debug: Show all affected projects
+          echo "Base commit: $BASE"
+          echo "All affected projects:"
+          nx show projects --affected --base=$BASE --head=HEAD
+          
           # Get affected apps with mcp-server tag
-          AFFECTED=$(nx show projects --affected --base=$BASE --head=HEAD --projects tag:mcp-server | tr '\n' ',' | sed 's/,$//')
+          echo "Checking for affected MCP servers..."
+          AFFECTED=$(nx show projects --affected --base=$BASE --head=HEAD --projects=tag:mcp-server | tr '\n' ',' | sed 's/,$//')
           
           if [ -z "$AFFECTED" ]; then
             echo "No affected MCP servers"

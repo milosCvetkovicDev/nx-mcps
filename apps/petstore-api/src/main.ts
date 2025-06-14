@@ -199,7 +199,7 @@ class PetstoreApiServer {
       const transport = new StdioServerTransport();
       await this.server.connect(transport);
 
-      this.logger.info('Petstore API MCP server started successfully');
+      this.logger.info('Petstore API MCP server started successfully!');
       
       // Pre-load the OpenAPI spec in the background
       this.openApiLoader.loadSpec().catch((error) => {
