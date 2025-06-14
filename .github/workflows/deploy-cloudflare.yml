@@ -56,8 +56,8 @@ jobs:
             BASE="HEAD~1"
           fi
           
-          # Get affected apps
-          AFFECTED=$(nx show projects --affected --base=$BASE --head=HEAD --type app | xargs -I {} nx show project {} --json | jq -r 'select(.tags[]? == "mcp-server") | .name' | tr '\n' ',' | sed 's/,$//')
+          # Get affected apps with mcp-server tag
+          AFFECTED=$(nx show projects --affected --base=$BASE --head=HEAD --projects tag:mcp-server | tr '\n' ',' | sed 's/,$//')
           
           if [ -z "$AFFECTED" ]; then
             echo "No affected MCP servers"
