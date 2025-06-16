@@ -30,11 +30,10 @@ resource "cloudflare_worker_script" "worker" {
 
   # Environment variables (secrets)
   dynamic "plain_text_binding" {
-    for_each = var.environment_variables
-    iterator = env
+    for_each = [for k, v in var.environment_variables : { name = k, text = v }]
     content {
-      name = env.key
-      text = env.value
+      name = plain_text_binding.value.name
+      text = plain_text_binding.value.text
     }
   }
 
