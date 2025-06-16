@@ -105,7 +105,7 @@ jobs:
 
       - name: Run tests for affected
         timeout-minutes: 15
-        run: npx nx affected --target=test --base=HEAD~1 --passWithNoTests --ci --maxWorkers=2 -- --watch=false --run
+        run: npx nx affected --target=test --base=HEAD~1 --passWithNoTests --ci --maxWorkers=2 -- --watch=false
 
       - name: Build affected applications
         timeout-minutes: 10
