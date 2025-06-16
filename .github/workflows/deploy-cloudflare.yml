@@ -59,11 +59,11 @@ jobs:
           # Debug: Show all affected projects
           echo "Base commit: $BASE"
           echo "All affected projects:"
-          nx show projects --affected --base=$BASE --head=HEAD
+          npx nx show projects --affected --base=$BASE --head=HEAD
           
           # Get affected apps with mcp-server tag
           echo "Checking for affected MCP servers..."
-          AFFECTED=$(nx show projects --affected --base=$BASE --head=HEAD --projects=tag:mcp-server | tr '\n' ',' | sed 's/,$//')
+          AFFECTED=$(npx nx show projects --affected --base=$BASE --head=HEAD --projects=tag:mcp-server | tr '\n' ',' | sed 's/,$//')
           
           if [ -z "$AFFECTED" ]; then
             echo "No affected MCP servers"
@@ -96,13 +96,13 @@ jobs:
         run: npm ci
 
       - name: Run linting for affected
-        run: nx affected --target=lint --base=HEAD~1
+        run: npx nx affected --target=lint --base=HEAD~1
 
       - name: Run tests for affected
-        run: nx affected --target=test --base=HEAD~1
+        run: npx nx affected --target=test --base=HEAD~1
 
       - name: Build affected applications
-        run: nx affected --target=build --base=HEAD~1
+        run: npx nx affected --target=build --base=HEAD~1
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
