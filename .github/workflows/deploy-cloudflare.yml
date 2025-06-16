@@ -73,6 +73,11 @@ jobs:
             echo "Affected MCP servers: $AFFECTED"
             echo "apps=$AFFECTED" >> $GITHUB_OUTPUT
             echo "has-affected=true" >> $GITHUB_OUTPUT
+            
+            # Debug: Verify outputs
+            echo "Debug - Output set:"
+            echo "  affected-apps: $AFFECTED"
+            echo "  has-affected: true"
           fi
 
   build-and-test:
@@ -148,6 +153,14 @@ jobs:
         with:
           name: dist
           path: dist/
+      
+      - name: Debug - Check build artifacts
+        run: |
+          echo "=== Contents of dist directory ==="
+          find dist -type f -name "*.js" | head -20
+          echo ""
+          echo "=== Directory structure of dist ==="
+          tree dist || ls -la dist/
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -178,14 +191,12 @@ jobs:
       - name: Generate affected apps configuration
         working-directory: infrastructure/terraform
         run: |
-          # Determine base commit for affected calculation
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
-          else
-            BASE="HEAD~1"
-          fi
+          # Use the affected apps detected in the detect-affected job
+          AFFECTED_APPS="${{ needs.detect-affected.outputs.affected-apps }}"
+          echo "Affected apps from detect-affected job: $AFFECTED_APPS"
           
-          node scripts/generate-affected-config.js --base=$BASE --env=${{ steps.env.outputs.environment }}
+          # Pass the affected apps list to the generate script
+          node scripts/generate-affected-config.js --env=${{ steps.env.outputs.environment }} --apps="$AFFECTED_APPS"
 
       - name: Debug - List generated Terraform files
         working-directory: infrastructure/terraform
@@ -207,6 +218,12 @@ jobs:
           echo ""
           echo "=== affected-apps.auto.tfvars content ==="
           cat affected-apps.auto.tfvars || echo "affected-apps.auto.tfvars not found"
+          echo ""
+          echo "=== affected-apps.json content ==="
+          cat affected-apps.json || echo "affected-apps.json not found"
+          echo ""
+          echo "=== affected-apps.tf content (first 50 lines) ==="
+          head -n 50 affected-apps.tf || echo "affected-apps.tf not found"
 
       - name: Terraform Init
         working-directory: infrastructure/terraform

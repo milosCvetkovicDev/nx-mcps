@@ -14,6 +14,7 @@ const args = process.argv.slice(2);
 const base = args.find(arg => arg.startsWith('--base='))?.split('=')[1] || 'HEAD~1';
 const head = args.find(arg => arg.startsWith('--head='))?.split('=')[1] || 'HEAD';
 const environment = args.find(arg => arg.startsWith('--env='))?.split('=')[1] || 'development';
+const appsArg = args.find(arg => arg.startsWith('--apps='))?.split('=')[1] || '';
 
 // Function to execute shell commands
 function exec(command) {
@@ -60,7 +61,7 @@ function getAffectedMcpServers() {
 
 // Generate Terraform module configuration for an MCP server
 function generateModuleConfig(app, index) {
-  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '');
+  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '').replace(/-/g, '_');
   const workerName = app.name.replace('@./', '').replace(/\//g, '-');
   
   return `
@@ -102,7 +103,7 @@ module "${moduleName}_worker" {
 
 // Generate archive data source for an MCP server
 function generateArchiveConfig(app) {
-  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '');
+  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '').replace(/-/g, '_');
   
   return `
 # Archive for ${app.name}
@@ -116,7 +117,7 @@ data "archive_file" "${moduleName}" {
 
 // Generate variable definitions for an MCP server
 function generateVariables(app) {
-  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '');
+  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '').replace(/-/g, '_');
   const displayName = app.name.replace('@./', '');
   
   return `
@@ -164,7 +165,7 @@ variable "${moduleName}_r2_buckets" {
 
 // Generate outputs for an MCP server
 function generateOutputs(app) {
-  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '');
+  const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '').replace(/-/g, '_');
   
   return `
 # Outputs for ${app.name}
@@ -187,7 +188,7 @@ output "${moduleName}_routes" {
 // Generate environment-specific tfvars
 function generateEnvTfvars(apps, env) {
   const deployVars = apps.map(app => {
-    const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '');
+    const moduleName = app.name.replace(/[@/.]/g, '_').replace(/^_+/, '').replace(/-/g, '_');
     return `deploy_${moduleName} = true`;
   }).join('\n');
   
@@ -201,10 +202,35 @@ ${deployVars}
 
 // Main function
 async function main() {
-  console.log('🔍 Detecting affected MCP server applications...');
-  console.log(`Base: ${base}, Head: ${head}, Environment: ${environment}`);
+  console.log('🔍 Processing affected MCP server applications...');
+  console.log(`Environment: ${environment}`);
   
-  const affectedApps = getAffectedMcpServers();
+  let affectedApps = [];
+  
+  // If apps are provided directly (from detect-affected job), use those
+  if (appsArg) {
+    console.log(`Using provided apps list: ${appsArg}`);
+    const appsList = appsArg.split(',').map(app => app.trim()).filter(Boolean);
+    
+    // Get project info for each provided app
+    for (const app of appsList) {
+      try {
+        const projectCommand = `npx nx show project ${app} --json`;
+        const projectInfo = JSON.parse(exec(projectCommand));
+        affectedApps.push({
+          name: app,
+          root: projectInfo.root,
+          projectName: projectInfo.name || app
+        });
+      } catch (error) {
+        console.error(`Error getting project info for ${app}:`, error.message);
+      }
+    }
+  } else {
+    // Fallback to detecting affected apps
+    console.log(`Detecting affected apps (Base: ${base}, Head: ${head})`);
+    affectedApps = getAffectedMcpServers();
+  }
   
   if (affectedApps.length === 0) {
     console.log('No affected MCP server applications found.');
