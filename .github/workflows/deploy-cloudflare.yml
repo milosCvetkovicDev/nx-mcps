@@ -28,7 +28,7 @@ jobs:
   detect-affected:
     runs-on: ubuntu-latest
     outputs:
-      affected-apps: ${{ steps.affected.outputs.apps }}
+      affected-apps: ${{ steps.affected.outputs.affected-apps }}
       has-affected: ${{ steps.affected.outputs.has-affected }}
     
     steps:
