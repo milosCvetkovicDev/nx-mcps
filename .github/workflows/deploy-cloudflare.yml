@@ -161,6 +161,9 @@ jobs:
           echo ""
           echo "=== Directory structure of dist ==="
           tree dist || ls -la dist/
+          echo ""
+          echo "=== Check for main.js files ==="
+          find dist -name "main.js" -type f -exec ls -la {} \;
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -228,6 +231,18 @@ jobs:
       - name: Terraform Init
         working-directory: infrastructure/terraform
         run: terraform init
+      
+      - name: Debug - Verify JavaScript files from Terraform perspective
+        working-directory: infrastructure/terraform
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          echo ""
+          echo "=== Check dist path from Terraform ==="
+          ls -la ../../dist/apps/*/main.js || echo "No main.js files found"
+          echo ""
+          echo "=== Affected apps that should have deploy flags ==="
+          grep "deploy_" affected-apps.auto.tfvars || echo "No deploy flags found"
 
       - name: Terraform Plan
         working-directory: infrastructure/terraform
@@ -238,14 +253,32 @@ jobs:
         working-directory: infrastructure/terraform
         run: terraform apply -auto-approve -var-file=terraform.tfvars -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
 
+      - name: Debug - Check Terraform state
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
+        working-directory: infrastructure/terraform
+        run: |
+          echo "=== Terraform state list ==="
+          terraform state list || echo "No resources in state"
+          echo ""
+          echo "=== Terraform show (filtered) ==="
+          terraform show -json | jq '.values.root_module.resources[]? | {type: .type, name: .name, address: .address}' || echo "No resources"
+          echo ""
+          echo "=== Check affected-apps.auto.tfvars again ==="
+          cat affected-apps.auto.tfvars || echo "No affected-apps.auto.tfvars"
+          
       - name: Get deployment info
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
         working-directory: infrastructure/terraform
         run: |
           echo "🚀 Deployed MCP Servers:"
-          terraform output -json deployed_mcp_servers | jq -r '.[] | "- \(.name) (\(.root))"'
+          # List all cloudflare_worker resources
+          terraform state list | grep -E 'module\..+\.cloudflare_worker' | while read resource; do
+            echo "- $resource"
+          done || echo "No workers deployed"
+          
           echo ""
           echo "📍 Deployment URLs:"
-          terraform output -json | jq -r 'to_entries[] | select(.key | endswith("_worker_url")) | "- \(.key | gsub("_worker_url$"; "")): \(.value)"'
+          # Get all outputs and filter for worker URLs
+          terraform output -json | jq -r 'to_entries[] | select(.key | endswith("_worker_url")) | select(.value.value != "" and .value.value != null) | "- \(.key | gsub("_worker_url$"; "")): \(.value.value)"' 2>/dev/null || echo "No worker URLs found"
 
   # Cleanup job removed - artifacts have retention-days: 5 set, so GitHub will automatically clean them up 
