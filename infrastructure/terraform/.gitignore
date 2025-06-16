@@ -13,6 +13,9 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+# But include environment-specific config files (they don't contain secrets)
+!environments/*.tfvars
+
 # Ignore override files as they are usually used to override resources locally
 override.tf
 override.tf.json
