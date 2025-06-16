@@ -231,13 +231,4 @@ jobs:
           echo "📍 Deployment URLs:"
           terraform output -json | jq -r 'to_entries[] | select(.key | endswith("_worker_url")) | "- \(.key | gsub("_worker_url$"; "")): \(.value)"'
 
-  cleanup:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-      - name: Clean up artifacts
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: dist 
+  # Cleanup job removed - artifacts have retention-days: 5 set, so GitHub will automatically clean them up 
