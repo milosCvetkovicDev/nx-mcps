@@ -1,11 +1,11 @@
 output "worker_id" {
   description = "ID of the deployed Worker"
-  value       = cloudflare_worker_script.worker.id
+  value       = cloudflare_workers_script.worker.id
 }
 
 output "worker_name" {
   description = "Name of the deployed Worker"
-  value       = cloudflare_worker_script.worker.name
+  value       = cloudflare_workers_script.worker.name
 }
 
 output "worker_routes" {
