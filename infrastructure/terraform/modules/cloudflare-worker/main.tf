@@ -17,7 +17,7 @@ locals {
 }
 
 # Create the Worker script
-resource "cloudflare_worker_script" "worker" {
+resource "cloudflare_workers_script" "worker" {
   account_id = var.account_id
   name       = var.worker_name
   content    = local.worker_content
@@ -30,10 +30,10 @@ resource "cloudflare_worker_script" "worker" {
 
   # Environment variables (secrets)
   dynamic "plain_text_binding" {
-    for_each = [for k, v in var.environment_variables : { name = k, text = v }]
+    for_each = var.environment_variables
     content {
-      name = plain_text_binding.value.name
-      text = plain_text_binding.value.text
+      name = plain_text_binding.key
+      text = plain_text_binding.value
     }
   }
 
@@ -80,7 +80,7 @@ resource "cloudflare_worker_route" "routes" {
 
   zone_id     = each.value.zone_id
   pattern     = each.value.pattern
-  script_name = cloudflare_worker_script.worker.name
+  script_name = cloudflare_workers_script.worker.name
 }
 
 # Create a custom domain for the worker (optional)
@@ -89,6 +89,6 @@ resource "cloudflare_worker_domain" "domain" {
 
   account_id = var.account_id
   hostname   = var.custom_domain
-  service    = cloudflare_worker_script.worker.name
+  service    = cloudflare_workers_script.worker.name
   zone_id    = var.custom_domain_zone_id
 } 
