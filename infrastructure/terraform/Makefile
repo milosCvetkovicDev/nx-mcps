@@ -4,8 +4,11 @@
 # Default environment
 ENV ?= dev
 
-# Terraform variables file based on environment
-TF_VARS := -var-file=environments/$(ENV).tfvars
+# Terraform variables files
+# Note: terraform.tfvars.local should contain your Cloudflare credentials for local development
+TF_VARS := -var-file=terraform.tfvars
+TF_VARS += $(wildcard terraform.tfvars.local)
+TF_VARS += -var-file=environments/$(ENV).tfvars
 
 # Help target
 help:
@@ -30,6 +33,9 @@ help:
 	@echo "Examples:"
 	@echo "  make plan ENV=dev"
 	@echo "  make apply ENV=production"
+	@echo ""
+	@echo "Note: Create terraform.tfvars.local with your Cloudflare credentials"
+	@echo "      for local development. See README.md for details."
 
 # Initialize Terraform
 init:

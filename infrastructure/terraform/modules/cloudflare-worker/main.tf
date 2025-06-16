@@ -30,7 +30,7 @@ resource "cloudflare_workers_script" "worker" {
 
   # Environment variables (secrets)
   dynamic "plain_text_binding" {
-    for_each = var.environment_variables
+    for_each = try(tomap(var.environment_variables), {})
     content {
       name = plain_text_binding.key
       text = plain_text_binding.value
@@ -75,7 +75,7 @@ resource "cloudflare_workers_script" "worker" {
 }
 
 # Create routes for the worker
-resource "cloudflare_worker_route" "routes" {
+resource "cloudflare_workers_route" "routes" {
   for_each = { for idx, route in var.routes : idx => route }
 
   zone_id     = each.value.zone_id
@@ -84,7 +84,7 @@ resource "cloudflare_worker_route" "routes" {
 }
 
 # Create a custom domain for the worker (optional)
-resource "cloudflare_worker_domain" "domain" {
+resource "cloudflare_workers_domain" "domain" {
   count = var.custom_domain != null ? 1 : 0
 
   account_id = var.account_id

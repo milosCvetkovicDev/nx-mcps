@@ -1,0 +1,11 @@
+# Example Cloudflare credentials for local development
+# Copy this file to terraform.tfvars.local and fill in your actual values
+
+# Your Cloudflare API token (40 characters)
+# Create at: https://dash.cloudflare.com/profile/api-tokens
+# Required permissions: Account:Cloudflare Workers Scripts:Edit
+cloudflare_api_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Your Cloudflare Account ID (32 characters)
+# Find in: Cloudflare Dashboard > Right sidebar > Account ID
+cloudflare_account_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 
