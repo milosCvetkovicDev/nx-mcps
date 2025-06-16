@@ -67,11 +67,11 @@ jobs:
           
           if [ -z "$AFFECTED" ]; then
             echo "No affected MCP servers"
-            echo "apps=" >> $GITHUB_OUTPUT
+            echo "affected-apps=" >> $GITHUB_OUTPUT
             echo "has-affected=false" >> $GITHUB_OUTPUT
           else
             echo "Affected MCP servers: $AFFECTED"
-            echo "apps=$AFFECTED" >> $GITHUB_OUTPUT
+            echo "affected-apps=$AFFECTED" >> $GITHUB_OUTPUT
             echo "has-affected=true" >> $GITHUB_OUTPUT
             
             # Debug: Verify outputs
