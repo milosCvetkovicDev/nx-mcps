@@ -79,6 +79,10 @@ jobs:
     needs: detect-affected
     runs-on: ubuntu-latest
     if: needs.detect-affected.outputs.has-affected == 'true'
+    timeout-minutes: 30
+    env:
+      CI: true
+      NODE_ENV: test
     
     steps:
       - name: Checkout code
@@ -96,13 +100,16 @@ jobs:
         run: npm ci
 
       - name: Run linting for affected
-        run: npx nx affected --target=lint --base=HEAD~1
+        timeout-minutes: 10
+        run: npx nx affected --target=lint --base=HEAD~1 --skip-nx-cache
 
       - name: Run tests for affected
-        run: npx nx affected --target=test --base=HEAD~1 --passWithNoTests
+        timeout-minutes: 15
+        run: npx nx affected --target=test --base=HEAD~1 --passWithNoTests --ci --maxWorkers=2 -- --watch=false --run
 
       - name: Build affected applications
-        run: npx nx affected --target=build --base=HEAD~1
+        timeout-minutes: 10
+        run: npx nx affected --target=build --base=HEAD~1 --skip-nx-cache
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
