@@ -11,10 +11,18 @@ const path = require('path');
 
 // Get command line arguments
 const args = process.argv.slice(2);
+console.log('Command line arguments:', args);
+
 const base = args.find(arg => arg.startsWith('--base='))?.split('=')[1] || 'HEAD~1';
 const head = args.find(arg => arg.startsWith('--head='))?.split('=')[1] || 'HEAD';
 const environment = args.find(arg => arg.startsWith('--env='))?.split('=')[1] || 'development';
 const appsArg = args.find(arg => arg.startsWith('--apps='))?.split('=')[1] || '';
+
+console.log('Parsed arguments:');
+console.log(`  base: ${base}`);
+console.log(`  head: ${head}`);
+console.log(`  environment: ${environment}`);
+console.log(`  appsArg: "${appsArg}"`);
 
 // Function to execute shell commands
 function exec(command) {
@@ -197,14 +205,17 @@ async function main() {
   
   // If apps are provided directly (from detect-affected job), use those
   if (appsArg) {
-    console.log(`Using provided apps list: ${appsArg}`);
+    console.log(`Using provided apps list: "${appsArg}"`);
     const appsList = appsArg.split(',').map(app => app.trim()).filter(Boolean);
+    console.log(`Parsed apps list:`, appsList);
     
     // Get project info for each provided app
     for (const app of appsList) {
+      console.log(`Getting project info for: ${app}`);
       try {
         const projectCommand = `npx nx show project ${app} --json`;
         const projectInfo = JSON.parse(exec(projectCommand));
+        console.log(`Project info for ${app}:`, { name: projectInfo.name, root: projectInfo.root });
         affectedApps.push({
           name: app,
           root: projectInfo.root,
@@ -216,7 +227,7 @@ async function main() {
     }
   } else {
     // Fallback to detecting affected apps
-    console.log(`Detecting affected apps (Base: ${base}, Head: ${head})`);
+    console.log(`No apps provided, detecting affected apps (Base: ${base}, Head: ${head})`);
     affectedApps = getAffectedMcpServers();
   }
   
@@ -267,6 +278,8 @@ ${outputs}
   fs.writeFileSync(path.join(outputDir, 'affected-apps-outputs.tf'), affectedOutputsContent);
   
   // Environment tfvars for deployment flags
+  console.log('\nGenerated tfvars content:');
+  console.log(envTfvars);
   fs.writeFileSync(path.join(outputDir, 'affected-apps.auto.tfvars'), envTfvars);
   
   // Write affected apps list for other scripts
@@ -284,6 +297,11 @@ ${outputs}
   );
   
   console.log('✅ Generated Terraform configuration for affected applications');
+  console.log(`   - affected-apps.tf (modules)`);
+  console.log(`   - affected-apps-variables.tf (variables)`);
+  console.log(`   - affected-apps-outputs.tf (outputs)`);
+  console.log(`   - affected-apps.auto.tfvars (deployment flags)`);
+  console.log(`   - affected-apps.json (metadata)`);
 }
 
 // Run the script
