@@ -187,18 +187,30 @@ jobs:
           
           node scripts/generate-affected-config.js --base=$BASE --env=${{ steps.env.outputs.environment }}
 
+      - name: Debug - List generated Terraform files
+        working-directory: infrastructure/terraform
+        run: |
+          echo "=== Generated Terraform files ==="
+          ls -la *.tf affected-apps.* || true
+          echo ""
+          echo "=== terraform.tfvars content ==="
+          cat terraform.tfvars || true
+          echo ""
+          echo "=== affected-apps.auto.tfvars content ==="
+          cat affected-apps.auto.tfvars || true
+
       - name: Terraform Init
         working-directory: infrastructure/terraform
         run: terraform init
 
       - name: Terraform Plan
         working-directory: infrastructure/terraform
-        run: terraform plan -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
+        run: terraform plan -var-file=terraform.tfvars -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
         working-directory: infrastructure/terraform
-        run: terraform apply -auto-approve -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
+        run: terraform apply -auto-approve -var-file=terraform.tfvars -var-file=environments/${{ steps.env.outputs.environment }}.tfvars
 
       - name: Get deployment info
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'

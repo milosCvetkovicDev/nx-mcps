@@ -28,30 +28,28 @@ function exec(command) {
 
 // Get affected MCP server applications
 function getAffectedMcpServers() {
-  // Get affected apps with mcp-server tag (NX 19+ compatible)
-  const affectedCommand = `nx show projects --affected --base=${base} --head=${head} --type app`;
+  // Get affected apps with mcp-server tag directly
+  const affectedCommand = `npx nx show projects --affected --base=${base} --head=${head} --projects=tag:mcp-server`;
   const affectedApps = exec(affectedCommand);
   
   if (!affectedApps) {
     return [];
   }
   
-  // Parse the affected apps (one per line in NX 19+)
+  // Parse the affected apps (one per line)
   const apps = affectedApps.split('\n').map(app => app.trim()).filter(Boolean);
   const mcpServers = [];
   
   for (const app of apps) {
-    // Check if app has mcp-server tag
-    const tagsCommand = `nx show project ${app} --json`;
+    // Get project info for each affected MCP server
+    const projectCommand = `npx nx show project ${app} --json`;
     try {
-      const projectInfo = JSON.parse(exec(tagsCommand));
-      if (projectInfo.tags && projectInfo.tags.includes('mcp-server')) {
-        mcpServers.push({
-          name: app,
-          root: projectInfo.root,
-          projectName: projectInfo.name || app
-        });
-      }
+      const projectInfo = JSON.parse(exec(projectCommand));
+      mcpServers.push({
+        name: app,
+        root: projectInfo.root,
+        projectName: projectInfo.name || app
+      });
     } catch (error) {
       console.error(`Error getting project info for ${app}:`, error.message);
     }
