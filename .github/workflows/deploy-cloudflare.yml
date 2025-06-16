@@ -105,7 +105,10 @@ jobs:
 
       - name: Run tests for affected
         timeout-minutes: 15
-        run: npx nx affected --target=test --base=HEAD~1 --passWithNoTests --ci --maxWorkers=2 -- --watch=false
+        env:
+          CI: true
+          JEST_WORKER_ID: 1
+        run: npx nx affected --target=test --base=HEAD~1 --passWithNoTests --ci -- --watchAll=false --forceExit --detectOpenHandles
 
       - name: Build affected applications
         timeout-minutes: 10
