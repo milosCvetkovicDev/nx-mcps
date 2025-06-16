@@ -190,14 +190,23 @@ jobs:
       - name: Debug - List generated Terraform files
         working-directory: infrastructure/terraform
         run: |
+          echo "=== Current directory ==="
+          pwd
+          echo ""
+          echo "=== List all files in current directory ==="
+          ls -la
+          echo ""
+          echo "=== List files in environments directory ==="
+          ls -la environments/ || echo "environments directory not found"
+          echo ""
           echo "=== Generated Terraform files ==="
           ls -la *.tf affected-apps.* || true
           echo ""
           echo "=== terraform.tfvars content ==="
-          cat terraform.tfvars || true
+          cat terraform.tfvars || echo "terraform.tfvars not found"
           echo ""
           echo "=== affected-apps.auto.tfvars content ==="
-          cat affected-apps.auto.tfvars || true
+          cat affected-apps.auto.tfvars || echo "affected-apps.auto.tfvars not found"
 
       - name: Terraform Init
         working-directory: infrastructure/terraform
