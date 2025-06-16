@@ -194,11 +194,22 @@ jobs:
       - name: Generate affected apps configuration
         working-directory: infrastructure/terraform
         run: |
+          # Debug: Check what we're receiving from detect-affected job
+          echo "=== Debug: Workflow outputs ==="
+          echo "needs.detect-affected.outputs.affected-apps: '${{ needs.detect-affected.outputs.affected-apps }}'"
+          echo "needs.detect-affected.outputs.has-affected: '${{ needs.detect-affected.outputs.has-affected }}'"
+          
           # Use the affected apps detected in the detect-affected job
           AFFECTED_APPS="${{ needs.detect-affected.outputs.affected-apps }}"
           echo "Affected apps from detect-affected job: $AFFECTED_APPS"
           
+          # Debug: Check if variable is empty
+          if [ -z "$AFFECTED_APPS" ]; then
+            echo "WARNING: AFFECTED_APPS is empty!"
+          fi
+          
           # Pass the affected apps list to the generate script
+          echo "Running: node scripts/generate-affected-config.js --env=${{ steps.env.outputs.environment }} --apps=\"$AFFECTED_APPS\""
           node scripts/generate-affected-config.js --env=${{ steps.env.outputs.environment }} --apps="$AFFECTED_APPS"
 
       - name: Debug - List generated Terraform files
