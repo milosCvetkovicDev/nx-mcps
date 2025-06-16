@@ -10,24 +10,24 @@ petstore_api_routes = [
 ]
 
 petstore_api_env_vars = {
-  NODE_ENV        = "production"
-  API_VERSION     = "v1"
-  LOG_LEVEL       = "info"
-  CORS_ORIGIN     = "https://example.com"
-  RATE_LIMIT      = "1000"
-  
+  NODE_ENV    = "production"
+  API_VERSION = "v1"
+  LOG_LEVEL   = "info"
+  CORS_ORIGIN = "https://example.com"
+  RATE_LIMIT  = "1000"
+
   # MCP-specific settings
-  MCP_AUTH_TOKEN  = "your-secret-token"  # Optional authentication
-  MCP_MAX_TIMEOUT = "30000"              # Max timeout in ms
+  MCP_AUTH_TOKEN  = "your-secret-token" # Optional authentication
+  MCP_MAX_TIMEOUT = "30000"             # Max timeout in ms
 }
 
 petstore_api_kv_namespaces = [
   {
-    binding = "RATE_LIMITER"  # For rate limiting
+    binding = "RATE_LIMITER" # For rate limiting
     id      = "your-kv-namespace-id"
   },
   {
-    binding = "CACHE"         # For caching responses
+    binding = "CACHE" # For caching responses
     id      = "your-cache-namespace-id"
   }
 ]
@@ -43,10 +43,10 @@ weather_api_routes = [
 ]
 
 weather_api_env_vars = {
-  NODE_ENV           = "production"
-  API_VERSION        = "v1"
-  WEATHER_API_KEY    = "your-weather-api-key"
-  CACHE_TTL_SECONDS  = "300"
+  NODE_ENV          = "production"
+  API_VERSION       = "v1"
+  WEATHER_API_KEY   = "your-weather-api-key"
+  CACHE_TTL_SECONDS = "300"
 }
 
 weather_api_kv_namespaces = [

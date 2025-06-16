@@ -9,9 +9,9 @@ output "worker_name" {
 }
 
 output "worker_routes" {
-  description = "Routes configured for the Worker"
+  description = "Routes configured for the worker"
   value = [
-    for route in cloudflare_worker_route.routes : {
+    for route in cloudflare_workers_route.routes : {
       pattern = route.pattern
       zone_id = route.zone_id
     }
