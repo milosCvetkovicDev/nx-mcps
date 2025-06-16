@@ -25,11 +25,19 @@ console.log(`  environment: ${environment}`);
 console.log(`  appsArg: "${appsArg}"`);
 
 // Function to execute shell commands
-function exec(command) {
+function exec(command, options = {}) {
   try {
-    return execSync(command, { encoding: 'utf8' }).trim();
+    // Default to running from workspace root (3 levels up from scripts directory)
+    const workspaceRoot = path.join(__dirname, '../../..');
+    const execOptions = {
+      encoding: 'utf8',
+      cwd: workspaceRoot,
+      ...options
+    };
+    return execSync(command, execOptions).trim();
   } catch (error) {
     console.error(`Error executing command: ${command}`);
+    console.error(`Working directory: ${error.cwd || 'default'}`);
     console.error(error.message);
     return '';
   }
@@ -53,7 +61,8 @@ function getAffectedMcpServers() {
     // Get project info for each affected MCP server
     const projectCommand = `npx nx show project ${app} --json`;
     try {
-      const projectInfo = JSON.parse(exec(projectCommand));
+      const output = exec(projectCommand);
+      const projectInfo = JSON.parse(output);
       mcpServers.push({
         name: app,
         root: projectInfo.root,
@@ -199,6 +208,8 @@ ${deployVars}
 // Main function
 async function main() {
   console.log('🔍 Processing affected MCP server applications...');
+  console.log(`Script directory: ${__dirname}`);
+  console.log(`Workspace root: ${path.join(__dirname, '../../..')}`);
   console.log(`Environment: ${environment}`);
   
   let affectedApps = [];
@@ -214,7 +225,10 @@ async function main() {
       console.log(`Getting project info for: ${app}`);
       try {
         const projectCommand = `npx nx show project ${app} --json`;
-        const projectInfo = JSON.parse(exec(projectCommand));
+        console.log(`Running command: ${projectCommand}`);
+        const output = exec(projectCommand);
+        console.log(`Command output (first 100 chars): ${output.substring(0, 100)}...`);
+        const projectInfo = JSON.parse(output);
         console.log(`Project info for ${app}:`, { name: projectInfo.name, root: projectInfo.root });
         affectedApps.push({
           name: app,
@@ -223,6 +237,7 @@ async function main() {
         });
       } catch (error) {
         console.error(`Error getting project info for ${app}:`, error.message);
+        console.error(`Stack trace:`, error.stack);
       }
     }
   } else {
