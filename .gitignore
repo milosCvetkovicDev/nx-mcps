@@ -46,3 +46,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 test-output
+
+# Terraform local configuration files
+infrastructure/terraform/terraform.tfvars.local
+*.tfvars.local

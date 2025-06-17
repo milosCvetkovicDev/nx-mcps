@@ -1,5 +1,0 @@
-# Local Terraform configuration - DO NOT COMMIT TO VERSION CONTROL
-# Replace these values with your actual Cloudflare credentials
-
-cloudflare_api_token  = "nfVUZZCfhdYx9Au3TXD0NoAoMJEeqbPDAcCqkiS4"
-cloudflare_account_id = "19a315e121731c1addf05fd4e0caa865" 
