@@ -47,6 +47,73 @@ vitest.config.*.timestamp*
 
 test-output
 
-# Terraform local configuration files
-infrastructure/terraform/terraform.tfvars.local
+# Sensitive files and credentials
+# Environment variables
+.env
+.env.*
+.env.local
+.env.*.local
+*.env
+
+# Terraform sensitive files
+*.tfvars
 *.tfvars.local
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Configuration files with credentials
+*-credentials.json
+*-credentials.yml
+*-credentials.yaml
+credentials.json
+credentials.yml
+credentials.yaml
+secrets.json
+secrets.yml
+secrets.yaml
+config.local.*
+*.local.config
+*.private.*
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+
+# Cloud provider credentials
+.aws/credentials
+.aws/config
+gcp-credentials.json
+azure-credentials.json
+
+# API keys and tokens
+*-apikey.*
+*-token.*
+apikeys.*
+tokens.*
+.npmrc
+.pypirc
+
+# Database configuration
+database.yml
+database.json
+db.config
+*.db
+*.sqlite
+*.sqlite3
