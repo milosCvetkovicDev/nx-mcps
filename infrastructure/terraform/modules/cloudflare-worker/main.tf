@@ -14,6 +14,9 @@ locals {
 
   # Determine if we're using modules format
   is_module_format = can(regex("export\\s+default\\s+{", local.worker_content))
+  
+  # Handle environment variables - ensure it's always a proper map
+  env_vars = var.environment_variables != null ? var.environment_variables : {}
 }
 
 # Create the Worker script
@@ -28,14 +31,13 @@ resource "cloudflare_workers_script" "worker" {
   # Module format for ES modules
   module = local.is_module_format
 
-  # Environment variables (secrets)
-  dynamic "plain_text_binding" {
-    for_each = try(tomap(var.environment_variables), {})
-    content {
-      name = plain_text_binding.key
-      text = plain_text_binding.value
-    }
-  }
+  # Environment variables - Currently commented out due to provider limitations
+  # The plain_text_binding block doesn't support dynamic blocks properly
+  # TODO: Uncomment and add individual plain_text_binding blocks as needed
+  # plain_text_binding {
+  #   name = "ENVIRONMENT"
+  #   text = var.environment
+  # }
 
   # KV namespace bindings
   dynamic "kv_namespace_binding" {
